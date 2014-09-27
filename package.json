@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register ./tests/**.coffee -R list",
     "watch": "mocha -w --compilers coffee:coffee-script/register ./tests/**.coffee -R list",
-    "start": "node index.js"
+    "start": "node index.js",
+    "publish": "git push heroku master:master && open http://levelgraph-test.herokuapp.com/"    
   },
   "keywords": [
     "LevelGraph"
@@ -16,14 +17,14 @@
   "dependencies": {
     "chai": "^1.9.1",
     "coffee-script": "^1.8.0",
+    "express": "^4.9.5",
     "level": "^0.18.0",
     "leveldown": "^1.0.0",
     "levelgraph": "^0.8.2",
     "mocha": "^1.21.4"
   },
   "devDependencies": {
-    "cheerio": "^0.17.0",
-    "express": "^4.9.5",
+    "cheerio": "^0.17.0",    
     "request": "^2.44.0",
     "supertest": "^0.13.0"
   }
