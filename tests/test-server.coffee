@@ -37,7 +37,7 @@ describe 'server |',->
                              .expect(200)
                              .end (error, response) ->
                                     throw error if error
-                                    expect(response.text).to.contain('[{"subject":"1106d793193b","predicate":"Guid"')
+                                    expect(response.text).to.contain('"subject": "1106d793193b')
                                     done()
 
 
@@ -46,5 +46,5 @@ describe 'server |',->
                           .expect(200)
                           .expect('Content-Type', /json/)
                           .end (error, response) ->
-                                expect(response.text).to.contain('[{"viewName":"Data Validation')
+                                expect(response.text).to.contain(' "viewName": "Data Validation"')
                                 done()
