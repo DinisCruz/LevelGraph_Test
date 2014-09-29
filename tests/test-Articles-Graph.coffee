@@ -1,3 +1,4 @@
+require('fluentnode')
 fs            = require('fs'           )
 expect        = require('chai'         ).expect
 spawn         = require('child_process').spawn
@@ -63,6 +64,40 @@ describe 'test-Articles-Graph |', ->
         articlesGraph.allData  (err, data) ->
                                                 expect(data.length).to.equal(articlesGraph.data.length)
                                                 done()
+    it 'query', (done)->
+        expect(articlesGraph.query).to.be.an('Function')
+        
+        items = [{ key : "subject"  , value: "bcea0b7ace25" , hasResults:true }
+                 { key : "subject"  , value: "...."         , hasResults:false}
+                 { key : "predicate", value: "View"         , hasResults:true }
+                 { key : "predicate", value: "...."         , hasResults:false}
+                 { key : "object"   , value: "Design"       , hasResults:true }]
+        #items = []
+        checkItem = ->
+            if(items.empty())
+                done()
+            else
+                item = items.pop()
+                articlesGraph.query item.key, item.value, (err, data)->
+                    if (item.hasResults)
+                        expect(data).to.not.be.empty
+                        expect(data.json()).to.contain(item.key)
+                        expect(data.json()).to.contain(item.value)
+                    else
+                        expect(data).to.be.empty
+                    checkItem()
+        checkItem()
+        #done();
+        
+        ###checkObject = (next)->
+        #articlesGraph.query "subject","Technology", (err, data) ->
+        articlesGraph.query "object", "bcea0b7ace25", (err, data) ->
+            
+            console.log(data.length)
+            console.log(data)
+            done()
+        ###    
+            
     
     it 'articlesInView_by_Id', (done)->
         expect(articlesGraph.articlesInView_by_Id).to.be.an('Function')
@@ -70,6 +105,7 @@ describe 'test-Articles-Graph |', ->
         viewId = 'bcea0b7ace25'
         articlesGraph.articlesInView_by_Id viewId,
                                            (err,data) ->
+                                                        expect(data.length).to.equal(5)
                                                         #console.log JSON.stringify(data,null,'  ')
                                                         done()
     it 'articlesInView_by_Name', (done)->
@@ -77,6 +113,7 @@ describe 'test-Articles-Graph |', ->
         viewName = 'Validate All Input'
         articlesGraph.articlesInView_by_Name viewName,
                                              (err,data) ->
+                                                            expect(data.length).to.equal(32)
                                                             #for item in data
                                                             #    console.log(">  subject: #{item.subject} , predicate: #{item.predicate}  object: #{item.object}")
                                                             #console.log JSON.stringify(data,null,'  ')

@@ -20,6 +20,8 @@ class ArticlesGraph
     closeDb: (done)->
                 @level.close =>
                     @db.close =>
+                        @db    = null
+                        @level = null
                         done()
                 
     openDb : ->
@@ -30,18 +32,29 @@ class ArticlesGraph
     dataFromFile: ()-> JSON.parse fs.readFileSync(@dataFilePath(), "utf8")
     
     loadTestData: (callback) =>
-        @data = @dataFromFile()             
+        if (@db==null)
+            @openDb()
+        @data = @dataFromFile()
         @db.put @data, callback
     
     # Search methods
     
     allData: (callback)->
         @db.search [{
-                        subject: @db.v("subject"),
+                        subject  : @db.v("subject"),
                         predicate: @db.v("predicate"),
-                        object: @db.v("object"),
+                        object   : @db.v("object"),
                     }], callback
      
+    query: (key, value, callback)->
+        switch key
+            when "subject"      then @db.get { subject: value}, callback
+            when "predicate"    then @db.get { predicate: value}, callback
+            when "object"       then @db.get { object: value}, callback
+            else callback(null,[])
+                    
+        
+        
     articlesInView_by_Id: (viewId, callback) ->
         #console.log("\n >  getting all viewArticles from #{viewId}")
         @db.get object: viewId, callback

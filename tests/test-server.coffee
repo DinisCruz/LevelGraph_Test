@@ -48,3 +48,15 @@ describe 'server |',->
                           .end (error, response) ->
                                 expect(response.text).to.contain(' "viewName": "Data Validation"')
                                 done()
+                                
+        it '/query', (done)->
+            key  = "object"
+            value = "Design"
+            supertest(server).get("/query/#{key}/#{value}")
+                          .expect(200)
+                          .expect('Content-Type', /json/)
+                          .end (error, response) ->
+                                throw error if error
+                                expect(response.text).to.contain(key)
+                                expect(response.text).to.contain(value)                                
+                                done()
