@@ -17,7 +17,7 @@ describe 'server |',->
                           .end (error, response) ->
                             $ = cheerio.load(response.text)
                             expect($('#title').html()).to.equal('LevelGraph TM data')
-                            expect($("a").length).to.equal(3)
+                            expect($("a").length).to.equal(6)
                             done()
     
     
