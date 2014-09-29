@@ -5,33 +5,31 @@ spawn         = require('child_process').spawn
 ArticlesGraph = require('./../src/ArticlesGraph')
 
 describe 'test-Articles-Graph |', ->
-    articlesGraph  = new ArticlesGraph()
-    deleteDbOnExit = false
+    articlesGraph  = new ArticlesGraph()    
     
     beforeEach ()->
-        #console.log '>>>>>>>>>>>>'
         articlesGraph.openDb()
 
     afterEach (done)->
-        articlesGraph.closeDb(done)
-        #console.log '<<<<<<<<<<<'
+        articlesGraph.closeDb(done)        
         
-    after (done) ->
-        #articlesGraph.level.close ->            # close levelup
-        #    articlesGraph.db.close(done)        # close levelgraoh
-        if deleteDbOnExit
-            #console.log 'Deleting the articleDB'
-            spawn('rm', ['-Rv',articlesGraph.dbPath])
-            #.stdout.on 'data', (data) -> #console.log('Deleting files: ' + data)
+    after (done) ->        
         done()
     
+    it 'deleteDb', (done) ->
+        articlesGraph.closeDb ->    
+            expect(articlesGraph.dbPath.fileExists()).to.be.true
+            spawn('rm', ['-Rv',articlesGraph.dbPath])
+                .on 'exit', (code, signal) ->                     
+                    expect(articlesGraph.dbPath.fileExists()).to.be.false
+                    done()
+        
     it 'check ctor',->
         expect(ArticlesGraph       ).to.be.an('Function')
         expect(articlesGraph       ).to.be.an('Object'  )
-        #expect(articlesGraph.dbPath).to.be.an('String'  )
+        expect(articlesGraph.dbPath).to.be.an('String'  )
         expect(articlesGraph.level ).to.be.an('Object'  )
         expect(articlesGraph.db    ).to.be.an('Object'  )
-        #expect(articlesGraph.db    ).to.equal(null)
 
     
     
@@ -59,7 +57,7 @@ describe 'test-Articles-Graph |', ->
                                             #articlesGraph.closeDb()
                                             done()
                                 
-    xit 'alldata', (done)->
+    it 'alldata', (done)->
         expect(articlesGraph.allData).to.be.an('Function')
         articlesGraph.allData  (err, data) ->
                                                 expect(data.length).to.equal(articlesGraph.data.length)
@@ -116,10 +114,22 @@ describe 'test-Articles-Graph |', ->
                                             done()
      
      it 'createSearchData' , (done)->
-                
-        checkSearchData = (data)->
             
-            data.json_pretty().log()
+        viewName          = 'Data Validation'
+        container_Title   = 'Perform Validation on the Server'
+        container_Id      = '4eef2c5f-7108-4ad2-a6b9-e6e84097e9e0'
+        container_Size    = 3
+        resultsTitle      = '8/8 results showing'
+        result_Title      = 'Client-side Validation Is Not Relied On';
+        result_Link       = 'https://tmdev01-sme.teammentor.net/9607b6e3-de61-4ff7-8ef0-9f8b44a5b27d'
+        result_Id         = '9607b6e3-de61-4ff7-8ef0-9f8b44a5b27d'
+        result_Summary    = 'Verify that the same or more rigorous checks are performed on the server as on the client. Verify that client-side validation is used only for usability and to reduce the number of posts to the server.'
+        result_Score      = 0
+        view_Title        = 'Technology'
+        view_result_Title = 'ASP.NET 4.0'
+        view_result_Size  = 1
+        
+        checkSearchData = (data)->
             
             expect(data             ).to.be.an('Object')
             expect(data.title       ).to.be.an('String')
@@ -127,17 +137,24 @@ describe 'test-Articles-Graph |', ->
             expect(data.resultsTitle).to.be.an('String')
             expect(data.results     ).to.be.an('Array' )
             expect(data.filters     ).to.be.an('Array' )
-            
-            
-            #console.log "got #{data.length} results"
-            #expect(data.length).to.be.above(20)
-            
+                        
+            expect(data.title                   ).to.equal(viewName)
+            expect(data.containers.first().title).to.equal(container_Title)
+            expect(data.containers.first().id   ).to.equal(container_Id   )
+            expect(data.containers.first().size ).to.equal(container_Size )      
+            expect(data.resultsTitle            ).to.equal(resultsTitle   )
+            expect(data.results.first().title   ).to.equal(result_Title)
+            expect(data.results.first().link    ).to.equal(result_Link)
+            expect(data.results.first().id      ).to.equal(result_Id)
+            expect(data.results.first().summary ).to.equal(result_Summary)
+            expect(data.results.first().score   ).to.equal(result_Score)
+                                
+            firstFilter = data.filters.first()
+            expect(firstFilter.title                ).to.equal(view_Title)
+            expect(firstFilter.results              ).to.be.an('Array' )
+            expect(firstFilter.results.first().title).to.equal(view_result_Title)
+            expect(firstFilter.results.first().size ).to.equal(view_result_Size)
+
             done()
         
-        articlesGraph.createSearchData 'Data Validation', checkSearchData
-                                        
-                                                    
-                                                    
-                                                    
-
-###
+        articlesGraph.createSearchData viewName, checkSearchData

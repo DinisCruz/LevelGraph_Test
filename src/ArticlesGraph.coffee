@@ -17,16 +17,23 @@ class ArticlesGraph
     
     #Setup methods
     
-    closeDb: (done)->
-                @level.close =>
-                    @db.close =>
-                        @db    = null
-                        @level = null
-                        done()
+    closeDb: (callback)->
+                if(@level == null)                    
+                    callback()
+                else                
+                    @level.close =>
+                        @db.close =>
+                            @db    = null
+                            @level = null
+                            callback()
                 
     openDb : ->
                 @level      = levelup   (@dbPath)
                 @db         = levelgraph(@level)
+                
+    deleteDb: ->
+        console.log 'Deleting the articleDB'
+        require('child_process').spawn('rm', ['-Rv',@dbPath])
             
     dataFilePath: -> process.cwd().path.join(@dataFile)
     dataFromFile: ()-> JSON.parse fs.readFileSync(@dataFilePath(), "utf8")
@@ -184,7 +191,7 @@ class ArticlesGraph
             
             viewsToMap = ({ id: key, size: viewsCount[key]} for key of viewsCount when typeof(viewsCount[key]) != 'function')
             
-            mapViews(viewsToMap, articles)                        
+            mapViews(viewsToMap, articles)
             
         setDefaultValues()        
         @db.nav("Data Validation").archIn('Title'    ).as('folder')

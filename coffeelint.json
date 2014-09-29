@@ -8,5 +8,10 @@
                         "name": "max_line_length",
                         "value": 250,
                         "level": "error"
-                        }            
+                        },
+    "no_trailing_whitespace": {
+                        "name": "no_trailing_whitespace",                        
+                        "level": "ignore"
+                        }    
+                        
 }
