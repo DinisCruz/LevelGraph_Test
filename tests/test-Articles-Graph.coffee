@@ -87,22 +87,10 @@ describe 'test-Articles-Graph |', ->
                         expect(data).to.be.empty
                     checkItem()
         checkItem()
-        #done();
-        
-        ###checkObject = (next)->
-        #articlesGraph.query "subject","Technology", (err, data) ->
-        articlesGraph.query "object", "bcea0b7ace25", (err, data) ->
-            
-            console.log(data.length)
-            console.log(data)
-            done()
-        ###    
-            
-    
+
     it 'articlesInView_by_Id', (done)->
         expect(articlesGraph.articlesInView_by_Id).to.be.an('Function')
-        viewId = 'bcea0b7ace25'
-        viewId = 'bcea0b7ace25'
+        viewId = 'bcea0b7ace25'      
         articlesGraph.articlesInView_by_Id viewId,
                                            (err,data) ->
                                                         expect(data.length).to.equal(5)
@@ -122,14 +110,15 @@ describe 'test-Articles-Graph |', ->
         expect(articlesGraph.searchGraph       ).to.be.an('Function')
         articlesGraph.searchGraph 'Data Validation',
                                   (err, data) ->
+                                            #console.log(data)
                                             expect(data.length).to.be.above(20)
-                                            console.log "got #{data.length} results"
-                                            done()
+                                            #console.log "got #{data.length} results"
+                                            done()  
      it 'createSearchData' , (done)->
         articlesGraph.createSearchData 'Data Validation',
                                         (data) ->
                                                     expect(data.length).to.be.above(20)
-                                                    console.log "got #{data.length} results"
+                                                    #console.log "got #{data.length} results"
                                                     done()
 
 ###

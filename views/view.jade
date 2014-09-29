@@ -1,0 +1,40 @@
+html
+    head
+        link(href='//cdnjs.cloudflare.com/ajax/libs/foundation/5.4.5/css/foundation.css', rel='stylesheet')
+
+    body
+        .row
+        .large-5.columns
+            h2#title Table view of graph data
+            div
+                a(href='/view/subject/') all data
+                span  , 
+                a(href='/view/object/Article') articles
+                span  , 
+                a(href='/view/object/View') views
+                span  , 
+                a(href='/view/object/Folder') folders
+                span  , 
+                a(href='/view/predicate/Technology') technology
+                span  , 
+                a(href='/view/predicate/Phase') phase
+            br
+            br
+            if data
+                table
+                    thead
+                        th subject
+                        th predicate
+                        th object
+                    for item in data        
+                        tr 
+                            td
+                                a#subject(href='/view/subject/'+item.subject)= item.subject
+                            td
+                                a#predicate(href='/view/predicate/'+item.predicate)= item.predicate    
+                            td
+                                a#object(href='/view/object/'+item.object)= item.object    
+
+                        //= item.predicate
+                        //| -- 
+                        //= item.object

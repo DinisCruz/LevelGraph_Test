@@ -92,10 +92,11 @@ class ArticlesGraph
                                       },callback
     
     searchGraph : (viewName,callback)->
-        @db.search [{   subject  : @db.v("viewId"   ),  predicate: "Title",  object   : viewName }
-                    {   subject  : @db.v("viewId"   ),  predicate: "View" ,  object   : @db.v("childViewId") }
-                    {   subject  : @db.v("articleId"),  predicate: "View" ,  object   : @db.v("childViewId") }
-                    {   subject  : @db.v("articleId"),  predicate: "is an" ,  object   : @db.v("Article") }
+        @db.search [{   subject  : @db.v("id"       ),  predicate: "Title"    ,  object   : viewName                }  # find item with Title 
+                    {   subject  : @db.v("id"       ),  predicate: "is an"    ,  object   : @db.v("Folder")         }  #""
+                    {   subject  : @db.v("viewId"   ),  predicate: "Contains" ,  object   : @db.v("childViewId")    }
+                    {   subject  : @db.v("articleId"),  predicate: "View"     ,  object   : @db.v("childViewId")    }
+                    {   subject  : @db.v("articleId"),  predicate: "is an"    ,  object   : @db.v("Article")        }
                     {   subject  : @db.v("articleId"),  predicate: @db.v("predicate") ,  object   : @db.v("object") }
                     ],
                     materialized: {
@@ -104,13 +105,12 @@ class ArticlesGraph
                                         childViewId : @db.v("childViewId")
                                         articleId   : @db.v("articleId")
                                         predicate   : @db.v("predicate")
-                                        object      : @db.v("object")
-                                        #object      : @db.v("object")
+                                        object      : @db.v("object")                                        
                                   }
                     callback
 
-    createSearchData: (viewName,callback)->
-        mapGraphData = (err,data) ->
+    createSearchData: (viewName,callback)->        
+        mapGraphData = (err,data) ->            
             callback(data)
         @searchGraph(viewName, mapGraphData)
         

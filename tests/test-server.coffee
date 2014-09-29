@@ -2,7 +2,7 @@ supertest = require('supertest')
 cheerio   = require('cheerio')
 expect    = require('chai').expect
 server    = require('./../src/server')
-        
+    
 describe 'server |',->
     it 'check ctor', ->
         expect(server                     ).to.be.an('Function')
@@ -17,12 +17,9 @@ describe 'server |',->
                           .end (error, response) ->
                             $ = cheerio.load(response.text)
                             expect($('#title').html()).to.equal('LevelGraph TM data')
-                            expect($("a").length).to.equal(6)
+                            expect($("a").length).to.equal(7)
                             done()
     
-    
-        #these tests fail on supertest (they hang on sync)
-        
         #from searchDataController
         it '/dataFilePath', (done)->
             supertest(server).get('/dataFilePath')
@@ -58,5 +55,25 @@ describe 'server |',->
                           .end (error, response) ->
                                 throw error if error
                                 expect(response.text).to.contain(key)
-                                expect(response.text).to.contain(value)                                
+                                expect(response.text).to.contain(value)
+                                done()
+        it '/view', (done)->
+            key  = "object"
+            value = "Design"
+            supertest(server).get("/view/#{key}/#{value}")
+                          .expect(200)
+                          .expect('Content-Type', /html/)
+                          .end (error, response) ->
+                                throw error if error
+                                $ = cheerio.load(response.text)
+                                expect($('a').length).to.equal(12)
+                                subject   = $('#subject')
+                                predicate = $('#predicate')
+                                object    = $('#object')
+                                expect(subject  .html()).to.equal('1106d793193b')
+                                expect(predicate.html()).to.equal('Phase')
+                                expect(object   .html()).to.equal('Design')                                                                
+                                expect(subject  .attr('href')).to.equal('/view/subject/1106d793193b')
+                                expect(predicate.attr('href')).to.equal('/view/predicate/Phase')
+                                expect(object   .attr('href')).to.equal('/view/object/Design')
                                 done()
