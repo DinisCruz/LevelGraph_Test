@@ -59,7 +59,7 @@ describe 'test-Articles-Graph |', ->
                                             #articlesGraph.closeDb()
                                             done()
                                 
-    it 'alldata', (done)->
+    xit 'alldata', (done)->
         expect(articlesGraph.allData).to.be.an('Function')
         articlesGraph.allData  (err, data) ->
                                                 expect(data.length).to.equal(articlesGraph.data.length)
@@ -101,7 +101,7 @@ describe 'test-Articles-Graph |', ->
         viewName = 'Validate All Input'
         articlesGraph.articlesInView_by_Name viewName,
                                              (err,data) ->
-                                                            expect(data.length).to.equal(32)
+                                                            expect(data.length).to.be.above(32)
                                                             #for item in data
                                                             #    console.log(">  subject: #{item.subject} , predicate: #{item.predicate}  object: #{item.object}")
                                                             #console.log JSON.stringify(data,null,'  ')
@@ -113,12 +113,31 @@ describe 'test-Articles-Graph |', ->
                                             #console.log(data)
                                             expect(data.length).to.be.above(20)
                                             #console.log "got #{data.length} results"
-                                            done()  
+                                            done()
+     
      it 'createSearchData' , (done)->
-        articlesGraph.createSearchData 'Data Validation',
-                                        (data) ->
-                                                    expect(data.length).to.be.above(20)
-                                                    #console.log "got #{data.length} results"
-                                                    done()
+                
+        checkSearchData = (data)->
+            
+            data.json_pretty().log()
+            
+            expect(data             ).to.be.an('Object')
+            expect(data.title       ).to.be.an('String')
+            expect(data.containers  ).to.be.an('Array' )
+            expect(data.resultsTitle).to.be.an('String')
+            expect(data.results     ).to.be.an('Array' )
+            expect(data.filters     ).to.be.an('Array' )
+            
+            
+            #console.log "got #{data.length} results"
+            #expect(data.length).to.be.above(20)
+            
+            done()
+        
+        articlesGraph.createSearchData 'Data Validation', checkSearchData
+                                        
+                                                    
+                                                    
+                                                    
 
 ###

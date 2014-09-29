@@ -31,12 +31,19 @@ class SearchDataController
             @articlesGraph.allData (error, data)=>
                 @sendAsJson(res, data)
             
-    getSearchGraph: (req,res)=>
+ #  getSearchGraph: (req,res)=>
+ #      viewName = "Data Validation"
+ #      @articlesGraph.loadTestData () =>
+ #          @articlesGraph.searchGraph viewName, (error, data) =>
+ #              @sendAsJson(res, data)
+                
+    getSearchData: (req,res)=>
         viewName = "Data Validation"
         @articlesGraph.loadTestData () =>
-            @articlesGraph.searchGraph viewName, (error, data) =>
-                @sendAsJson(res, data)
-                
+            @articlesGraph.createSearchData viewName, (data) =>                
+                @sendAsJson(res, data)            
+    
+    
     query: (req,res) =>
         key   = req.params.key      #'object'
         value =  req.params.value   #'Design'
@@ -54,7 +61,8 @@ class SearchDataController
     mapRoutes: (server)->
         server.get('/dataFilePath'     , @getDataFilePath)
         server.get('/data.json'        , @getData)
-        server.get('/searchGraph.json' , @getSearchGraph)
+        server.get('/searchData.json'  , @getSearchData)
+        #server.get('/searchGraph.json' , @getSearchGraph)
         server.get('/query/:key/'      , @query)
         server.get('/query/:key/:value', @query)        
         server.get('/view/:key/'       , @view)

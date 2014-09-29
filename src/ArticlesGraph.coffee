@@ -109,9 +109,87 @@ class ArticlesGraph
                                   }
                     callback
 
-    createSearchData: (viewName,callback)->        
-        mapGraphData = (err,data) ->            
-            callback(data)
-        @searchGraph(viewName, mapGraphData)
+    createSearchData: (folderName,callback)->        
+        
+        searchData              = {}
+        
+        setDefaultValues = ->
+            searchData.title        = folderName
+            searchData.containers   = []
+            searchData.resultsTitle = "n/n results showing"
+            searchData.results      = []
+            searchData.filters      = []
+        
+        metadata = {}
+        
+        mapMetadata = ()=>
+            for item of metadata when typeof(metadata[item]) != 'function'
+                filter = {}
+                filter.title   = item
+                filter.results = []
+                for mapping of metadata[item]
+                    if typeof(metadata[item][mapping]) != 'function'
+                        result = { title : mapping , size: metadata[item][mapping]}
+                        filter.results.push(result)                        
+                searchData.filters.push(filter)
+            callback(searchData)
+            
+        mapArticles = (articles) =>            
+            if (articles.empty())                
+                mapMetadata()
+            else
+                article = articles.pop()
+                @query 'subject', article, (err,data) ->
+                    result = { title: null, link: null , id: null, summary: null, score : null }
+                    for item in data
+                        switch item.predicate
+                            when 'Guid'     then result.id = item.object
+                            when 'Title'    then result.title = item.object
+                            when 'Summary'  then result.summary = item.object
+                            when 'is an'    then #do Nothing
+                            when 'View'     then #do Nothing
+                            else 
+                                if not metadata[item.predicate] then metadata[item.predicate] = {}
+                                if metadata[item.predicate][item.object] 
+                                    metadata[item.predicate][item.object]++
+                                else
+                                    metadata[item.predicate][item.object] = 1
+                    result.link = 'https://tmdev01-sme.teammentor.net/'+result.id
+                    result.score = 0                    
+                    searchData.results.push(result)
+                    mapArticles(articles)
+        
+        mapViews = (viewsToMap,articles) =>                
+            if (viewsToMap.empty())
+                mapArticles(articles)
+            else
+                viewToMap = viewsToMap.pop()                
+                @query 'subject', viewToMap.id, (err,data) ->
+                    container = { title: null, id: null, size : viewToMap.size }
+                    for item in data
+                        switch item.predicate
+                            when 'Guid'  then container.id = item.object
+                            when 'Title' then container.title = item.object                            
+                    searchData.containers.push(container)    
+                    mapViews(viewsToMap,articles)
+            
+        mapResults = (err,data) =>            
+            viewsCount = {}
+            articles   = []
+            for item in data                
+                articles.push(item.article)
+                if viewsCount[item.view] then viewsCount[item.view]++ else viewsCount[item.view] = 1
+                
+            searchData.resultsTitle = "#{articles.length}/#{data.length} results showing"
+            
+            viewsToMap = ({ id: key, size: viewsCount[key]} for key of viewsCount when typeof(viewsCount[key]) != 'function')
+            
+            mapViews(viewsToMap, articles)                        
+            
+        setDefaultValues()        
+        @db.nav("Data Validation").archIn('Title'    ).as('folder')
+                                  .archOut('Contains').as('view')
+                                  .archIn('View'     ).as('article')
+                                  .solutions(mapResults)        
         
 module.exports = ArticlesGraph

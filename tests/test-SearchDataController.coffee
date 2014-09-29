@@ -13,7 +13,8 @@ describe 'SearchData_Controller',->
         routesAdded    = []
         expectedRoutes = ['/dataFilePath'
                           '/data.json'
-                          '/searchGraph.json'
+                          #'/searchGraph.json'
+                          '/searchData.json'
                           '/query/:key/'
                           '/query/:key/:value'
                           '/view/:key/'

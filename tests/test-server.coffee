@@ -38,13 +38,20 @@ describe 'server |',->
                                     done()
 
 
-        it '/searchGraph.json', (done)->
-            supertest(server).get('/searchGraph.json')
+  #     it '/searchGraph.json', (done)->
+  #         supertest(server).get('/searchGraph.json')
+  #                       .expect(200)
+  #                       .expect('Content-Type', /json/)
+  #                       .end (error, response) ->
+  #                             expect(response.text).to.contain(' "viewName": "Data Validation"')
+  #                             done()
+        it '/searchData.json', (done)->
+            supertest(server).get('/searchData.json')
                           .expect(200)
                           .expect('Content-Type', /json/)
-                          .end (error, response) ->
-                                expect(response.text).to.contain(' "viewName": "Data Validation"')
-                                done()
+                          .end (error, response) ->                                
+                                expect(response.text).to.contain('"title": "Data Validation"')
+                                done()  
                                 
         it '/query', (done)->
             key  = "object"
