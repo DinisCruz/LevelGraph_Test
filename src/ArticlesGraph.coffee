@@ -6,10 +6,7 @@ levelgraph = require('levelgraph'   )
 
 class ArticlesGraph
     constructor: ->
-                    #console.log('in ArticlesGraph ctor')
                     @dbPath     = './db'
-                    #@level      = levelup   (@dbPath)
-                    #@db         = levelgraph(@level)
                     @level      = null
                     @db         = null
                     @dataFile   = './src/article-data.json'
