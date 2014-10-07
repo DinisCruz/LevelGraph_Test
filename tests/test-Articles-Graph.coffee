@@ -4,7 +4,7 @@ expect        = require('chai'         ).expect
 spawn         = require('child_process').spawn
 ArticlesGraph = require('./../src/ArticlesGraph')
 
-describe 'test-Articles-Graph |', ->
+xdescribe 'test-Articles-Graph |', ->
     articlesGraph  = new ArticlesGraph()    
     
     beforeEach ()->
@@ -13,8 +13,8 @@ describe 'test-Articles-Graph |', ->
     afterEach (done)->
         articlesGraph.closeDb(done)        
         
-    after (done) ->        
-        done()
+    #after (done) ->        
+    #    done()
     
     it 'deleteDb', (done) ->
         articlesGraph.closeDb ->    
@@ -79,8 +79,8 @@ describe 'test-Articles-Graph |', ->
                 articlesGraph.query item.key, item.value, (err, data)->
                     if (item.hasResults)
                         expect(data).to.not.be.empty
-                        expect(data.json()).to.contain(item.key)
-                        expect(data.json()).to.contain(item.value)
+                        expect(data.json_pretty()).to.contain(item.key)
+                        expect(data.json_pretty()).to.contain(item.value)
                     else
                         expect(data).to.be.empty
                     checkItem()
@@ -113,14 +113,13 @@ describe 'test-Articles-Graph |', ->
                                             #console.log "got #{data.length} results"
                                             done()
      
-     it 'createSearchData' , (done)->
-            
+     it 'createSearchData' , (done)->            
         viewName          = 'Data Validation'
         container_Title   = 'Perform Validation on the Server'
         container_Id      = '4eef2c5f-7108-4ad2-a6b9-e6e84097e9e0'
         container_Size    = 3
         resultsTitle      = '8/8 results showing'
-        result_Title      = 'Client-side Validation Is Not Relied On';
+        result_Title      = 'Client-side Validation Is Not Relied On'
         result_Link       = 'https://tmdev01-sme.teammentor.net/9607b6e3-de61-4ff7-8ef0-9f8b44a5b27d'
         result_Id         = '9607b6e3-de61-4ff7-8ef0-9f8b44a5b27d'
         result_Summary    = 'Verify that the same or more rigorous checks are performed on the server as on the client. Verify that client-side validation is used only for usability and to reduce the number of posts to the server.'
@@ -158,3 +157,42 @@ describe 'test-Articles-Graph |', ->
             done()
         
         articlesGraph.createSearchData viewName, checkSearchData
+       
+    it 'vis DataSet (for edges)', ->  
+        DataSet        = require('vis/lib/DataSet')   
+        edges = new DataSet()
+        edges.add([{from: '1', to: '2'},
+                   {from: '1', to: '3'}])
+        
+        firstId   = edges.getIds().first()
+        firstEdge = edges.get(firstId)
+        
+        expect(edges.getIds().length).to.equal(2)        
+        expect(firstId              ).to.be.an('String')        
+        expect(firstEdge            ).to.be.an('Object')
+        expect(firstEdge.from       ).to.equal("1")
+        expect(firstEdge.to         ).to.equal("2")
+        
+        #console.log(edges.json_pretty())
+        
+    it 'getRawGraphData' , (done)->           
+        expect(articlesGraph.getRawGraphData).to.be.an('Function')        
+        articlesGraph.getRawGraphData   "subject", "1106d793193b", (graphData)->
+            expect(graphData).to.be.an('Object')
+            expect(graphData.nodes.length).to.equal(10)            
+            expect(graphData.edges.length).to.equal(9)
+            expect(graphData.nodes[0]).to.equal("1106d793193b")   
+            #console.log graphData
+            done()
+       
+describe 'test-Articles-Graph | under dev |', ->
+    articlesGraph  = new ArticlesGraph()    
+    DataSet        = require('vis/lib/DataSet')   
+    
+    beforeEach ()->
+        articlesGraph.openDb()
+
+    afterEach (done)->
+        articlesGraph.closeDb(done)   
+        
+

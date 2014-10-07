@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register ./tests/**.coffee -R list",
-    "watch": "mocha -w --compilers coffee:coffee-script/register ./tests/**.coffee -R list",
+    "watch": "mocha -w --compilers coffee:coffee-script/register --watch-extensions jade ./tests/*.coffee ./tests/**/*.coffee -R list",
     "start": "node index.js",
-    "publish": "git push heroku master:master && open http://levelgraph-test.herokuapp.com/"
+    "publish": "git push heroku master:master && open http://levelgraph-test.herokuapp.com/",
+    "dev": "./node_modules/supervisor/lib/cli-wrapper.js -e 'coffee,js' index.js"
   },
   "keywords": [
     "LevelGraph"
@@ -28,6 +29,8 @@
   "devDependencies": {
     "cheerio": "^0.17.0",
     "request": "^2.44.0",
-    "supertest": "^0.13.0"
+    "supertest": "^0.13.0",
+    "supervisor": "^0.6.0",
+    "zombie": "^2.0.4"
   }
 }

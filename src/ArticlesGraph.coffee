@@ -53,11 +53,12 @@ class ArticlesGraph
                         object   : @db.v("object"),
                     }], callback
      
-    query: (key, value, callback)->
+    query: (key, value, callback)=>
         switch key
-            when "subject"      then @db.get { subject: value}, callback
-            when "predicate"    then @db.get { predicate: value}, callback
-            when "object"       then @db.get { object: value}, callback
+            when "subject"      then @db.get     { subject: value}, callback
+            when "predicate"    then @db.get     { predicate: value}, callback
+            when "object"       then @db.get     { object: value}, callback
+            when "all"          then @allData callback
             else callback(null,[])
                     
         
@@ -198,5 +199,126 @@ class ArticlesGraph
                                   .archOut('Contains').as('view')
                                   .archIn('View'     ).as('article')
                                   .solutions(mapResults)        
+    
+    getRawGraphData: (queryKey, queryValue,callback)=>       
+        if not queryKey
+            queryKey = "all"
+        if not queryValue
+            queryValue = ""   
+        @query queryKey, queryValue, (err, data) =>
+            DataSet   = require('vis/lib/DataSet')          
+            nodes     = []
+            edges     = []
+            for item in data
+                if item.subject not in nodes
+                    nodes.push(item.subject)
+                if item.object not in nodes
+                    nodes.push(item.object)
+                edges.push { from: item.subject , to: item.object, label:item.predicate}
+                
+            graphData = { nodes: nodes, edges: edges }  
+            callback(graphData)
+            
+    getGraphData: (callback) =>        
+        @query "all", null, (err, data) =>
+            DataSet   = require('vis/lib/DataSet')
+            nodesAdded   = []
+            nodesMapping = {}
+            nodes        = []
+            edges        = []
+            
+            setNodeStyle = (node)->
+                #console.log(node.id)
+                node.mass = 5
+                borderWidth = 5
+                node.shape = 'box'
+                node.color = {
+                                background: "#97C2FC"
+                                #border: 'red'
+                             }
+                switch node.id
+                    when "Article", "View"
+                        node.color.background =  "#97d997"
+                        node.fontSize = 20                        
+                        node.shape    = 'circle'
+                    when "ASP.NET 4.0", "ASP.NET 3.5", "Android", "C++"
+                        node.color.background =  "#6950a2"
+                        node.fontSize = 20
+                        node.shape    = 'ellipse'
+                    when "Data Validation"
+                        node.color.background =  "#c3c335"
+                        node.shape    = 'database'     
+                        node.allowedToMoveX  = true
+                        node.allowedToMoveY  = true
+                        node.x = 0
+                        node.y = -100
+                        node.fontSize = 20
+                        node.label = "SEARCH KEYWORD\n" + node.label
+                    else
+                        node.fontSize = 20
+
+                        
+            setEdgeStyle = (edge)->
+                fromNode = nodesMapping[edge.from]
+                toNode = nodesMapping[edge.to]
+                if(edge.to.length < 30) 
+                    fromNode.title += '\n - ' + edge.to
+                if(edge.label=='is an')                     
+                    fromNode.label            = edge.to + ":\n" + fromNode.label
+                    if (edge.to == 'Article')
+                        fromNode.color.background = "#92a792"
+                        #if(toNode)
+                        #    nodes.splice(nodes.indexOf(toNode), 1) 
+                    else
+                        fromNode.color.background =  "#c3c335"    
+                    #if(toNode)
+                    #    nodes.splice(nodes.indexOf(toNode), 1)   
+                    #return false
+                    fromNode.fontSize        = 20
+                    
+                if (edge.label=='Title')
+                    fromNode.label  = edge.to + ":\n" + fromNode.label
+                    if(toNode)
+                        nodes.splice(nodes.indexOf(toNode), 1)   
+                    return false
+                edge.style = 'arrow'    
+                edge.fontSize = 21                
+                edge.length  = 400
+                return true
+
+            
+            addNode = (nodeId)->
+                if (nodeId.length >30 or nodeId.length < 4) 
+                    return                                
+                color = 
+                if nodeId not in nodesAdded
+                    nodesAdded.push(nodeId)
+                    node = {
+                                id       : nodeId
+                                label    : nodeId
+                                title    : nodeId                               
+                            }
+                    setNodeStyle(node)           
+                    nodes.push(node)
+                    nodesMapping[nodeId] = node
+            
+            addEdge = (item)->   
+                edge = { 
+                            from      : item.subject
+                            to        : item.object 
+                            label     : item.predicate                            
+                       }
+                        
+                if setEdgeStyle(edge)            
+                    edges.push(edge)
+            
+            for item in data#.splice(0,40)                
+                addNode(item.subject)
+                addNode(item.object)
+                addEdge(item)
+                                
+            graphData = { nodes: nodes, edges: edges }  
+            graphData.refresh = false
+            callback(graphData)
         
 module.exports = ArticlesGraph

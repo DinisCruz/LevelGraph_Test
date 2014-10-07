@@ -53,7 +53,7 @@
     { "subject": "9f8b44a5b27d"   , "predicate": "Guid"      , "object": "9607b6e3-de61-4ff7-8ef0-9f8b44a5b27d"   },
     { "subject": "9f8b44a5b27d"   , "predicate": "Title"     , "object": "Client-side Validation Is Not Relied On"},    
     { "subject": "9f8b44a5b27d"   , "predicate": "Summary"   , "object": "Verify that the same or more rigorous checks are performed on the server as on the client. Verify that client-side validation is used only for usability and to reduce the number of posts to the server."},    
-    { "subject": "9f8b44a5b27d"   , "predicate": "Technology", "object": "ASP.NET 4.1"                            },
+    { "subject": "9f8b44a5b27d"   , "predicate": "Technology", "object": "ASP.NET 4.0"                            },
     { "subject": "9f8b44a5b27d"   , "predicate": "Phase"     , "object": "Implementation"                         },
     { "subject": "9f8b44a5b27d"   , "predicate": "Type"      , "object": "Checklist Item"                         },
     { "subject": "9f8b44a5b27d"   , "predicate": "Category"  , "object": "Input and Data Validation"              },

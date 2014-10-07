@@ -19,6 +19,10 @@ describe 'SearchData_Controller',->
                           '/query/:key/:value'
                           '/view/:key/'
                           '/view/:key/:value'
+                          '/graphData.json'
+                          '/graphData'
+                          '/rawGraphData/:key/:value'
+                          '/rawGraphData.json'                          
                           ]
         server = { get: (route, callback)-> routesAdded.push(route)}
         searchDataController.mapRoutes(server)
