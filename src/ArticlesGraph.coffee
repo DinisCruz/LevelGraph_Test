@@ -1,8 +1,9 @@
 require('fluentnode')
-fs         = require('fs')
-levelup    = require("level"        )
-leveldown  = require('leveldown'    )
-levelgraph = require('levelgraph'   )
+fs          = require('fs')
+levelup     = require("level"        )
+leveldown   = require('leveldown'    )
+levelgraph  = require('levelgraph'   )
+articleData = require('./articleData.coffee')
 
 class ArticlesGraph
     constructor: ->
@@ -28,9 +29,11 @@ class ArticlesGraph
                 @level      = levelup   (@dbPath)
                 @db         = levelgraph(@level)
                 
-    deleteDb: ->
+    deleteDb: (callback)=>
         console.log 'Deleting the articleDB'
         require('child_process').spawn('rm', ['-Rv',@dbPath])
+                                .on 'exit', callback
+
             
     dataFilePath: -> process.cwd().path.join(@dataFile)
     dataFromFile: ()-> JSON.parse fs.readFileSync(@dataFilePath(), "utf8")
@@ -39,7 +42,8 @@ class ArticlesGraph
         if (@db==null)
             @openDb()
         @data = @dataFromFile()
-        @db.put @data, callback
+        articleData @db, =>
+            @db.put @data, callback
     
     # Search methods
     
@@ -224,76 +228,72 @@ class ArticlesGraph
             nodes        = []
             edges        = []
             
-            setNodeStyle = (node)->
-                #console.log(node.id)
-                node.mass = 5
-                borderWidth = 5
+            setNodeStyle = (node)->                
+                node.mass = 7               
                 node.shape = 'box'
-                node.color = {
-                                background: "#97C2FC"
-                                #border: 'red'
-                             }
-                switch node.id
-                    when "Article", "View"
-                        node.color.background =  "#97d997"
-                        node.fontSize = 20                        
-                        node.shape    = 'circle'
-                    when "ASP.NET 4.0", "ASP.NET 3.5", "Android", "C++"
-                        node.color.background =  "#6950a2"
-                        node.fontSize = 20
-                        node.shape    = 'ellipse'
-                    when "Data Validation"
-                        node.color.background =  "#c3c335"
-                        node.shape    = 'database'     
-                        node.allowedToMoveX  = true
-                        node.allowedToMoveY  = true
-                        node.x = 0
-                        node.y = -100
-                        node.fontSize = 20
-                        node.label = "SEARCH KEYWORD\n" + node.label
-                    else
-                        node.fontSize = 20
+                node.color = {}                                        
 
                         
             setEdgeStyle = (edge)->
                 fromNode = nodesMapping[edge.from]
                 toNode = nodesMapping[edge.to]
-                if(edge.to.length < 30) 
-                    fromNode.title += '\n - ' + edge.to
-                if(edge.label=='is an')                     
-                    fromNode.label            = edge.to + ":\n" + fromNode.label
-                    if (edge.to == 'Article')
-                        fromNode.color.background = "#92a792"
-                        #if(toNode)
-                        #    nodes.splice(nodes.indexOf(toNode), 1) 
-                    else
-                        fromNode.color.background =  "#c3c335"    
-                    #if(toNode)
-                    #    nodes.splice(nodes.indexOf(toNode), 1)   
-                    #return false
-                    fromNode.fontSize        = 20
+                #if(edge.to.length < 30) 
+                #    fromNode.title += '\n - ' + edge.to
+                switch(edge.label)
+                    when 'is'                                             
+                        switch (edge.to)
+                            when 'Search'
+                                fromNode.color.background =  "#c3c335"                        
+                            when 'Articles','Queries', 'Metadatas'
+                                fromNode.color.background = "#92a792"                            
+                            when 'Query'     then fromNode.color.background = "#e6b1b1"                        
+                            when 'Article'   then fromNode.color.background = "#97d997"
+                            when 'Metadata'  then fromNode.color.background = "#95bff7"
+                            when 'XRef'
+                                fromNode.color.background = '#000000'
+                                fromNode.shape           = 'dot'
+                                fromNode.radiusMax       = '10'
+                                #fromNode.fontColor        = '#ffffff'                                                                
+                            else
+                                fromNode.color.background =  "#FFc335"                    
+                        fromNode.fontSize  = 30
+                        toNode.visible     = false
                     
-                if (edge.label=='Title')
-                    fromNode.label  = edge.to + ":\n" + fromNode.label
-                    if(toNode)
-                        nodes.splice(nodes.indexOf(toNode), 1)   
-                    return false
+                    when 'title'
+                        fromNode.label  = edge.to #+ ":\n\n" + fromNode.label
+                        toNode.visible = false
+                        
+                    when 'guid','weight', 'summary'
+                        toNode.visible = false
+                    
                 edge.style = 'arrow'    
-                edge.fontSize = 21                
-                edge.length  = 400
+                edge.fontSize = 10                
+                edge.length  = 150
+                switch (edge.label)
+                    when 'target'                         
+                        xrefTarget = nodesMapping[toNode.id]
+                        fromNode.label = xrefTarget.label
+                        fromNode.title += '<br/>....ArticleId: ' + toNode.id
+                        fromNode.fontSize  = 20
+                        return false
+                    when 'weight'
+                        fromNode.value = toNode.label
+                        fromNode.title += '<br/>....Weight: ' + toNode.label
+                        return true
+                
                 return true
 
             
             addNode = (nodeId)->
-                if (nodeId.length >30 or nodeId.length < 4) 
-                    return                                
-                color = 
+                #if (not nodeId or nodeId.length >30 or nodeId.length < 4) 
+                #    return                                                
                 if nodeId not in nodesAdded
                     nodesAdded.push(nodeId)
                     node = {
                                 id       : nodeId
                                 label    : nodeId
-                                title    : nodeId                               
+                                title    : nodeId    
+                                visible  : true
                             }
                     setNodeStyle(node)           
                     nodes.push(node)
@@ -313,7 +313,9 @@ class ArticlesGraph
                 addNode(item.subject)
                 addNode(item.object)
                 addEdge(item)
-                                
+                
+            nodes = (node for node in nodes when node.visible)
+            
             graphData = { nodes: nodes, edges: edges }  
             graphData.refresh = false
             callback(graphData)

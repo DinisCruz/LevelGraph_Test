@@ -4,7 +4,7 @@ expect        = require('chai'         ).expect
 spawn         = require('child_process').spawn
 ArticlesGraph = require('./../src/ArticlesGraph')
 
-xdescribe 'test-Articles-Graph |', ->
+describe 'test-Articles-Graph |', ->
     articlesGraph  = new ArticlesGraph()    
     
     beforeEach ()->

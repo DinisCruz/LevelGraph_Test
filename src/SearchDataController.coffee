@@ -27,15 +27,16 @@ class SearchDataController
         (req,res)=>
             res.send(@articlesGraph.dataFilePath())
     
-    getGraphData: (req,res)=>        
+    getGraphData: (req,res)=>                
         @articlesGraph.loadTestData () =>    
             @articlesGraph.getGraphData (graphData)=>
                 @sendAsJson(res, graphData)
     
-    getGraphDataView: (req,res)=>   
-        @articlesGraph.loadTestData () =>    
-            @articlesGraph.getGraphData (graphData)=>
-                 @sendAsJade(res, "rawGraphData", {data :graphData })
+    getGraphDataView: (req,res)=>
+        @sendAsJade(res, "rawGraphData")
+        #    @articlesGraph.loadTestData () =>    
+        #        @articlesGraph.getGraphData (graphData)=>
+        #             @sendAsJade(res, "rawsGraphData", {data :graphData })
 
     getRawGraphData: (req,res)=>  
         @articlesGraph.loadTestData () =>    

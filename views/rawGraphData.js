@@ -6,13 +6,15 @@ var showData = function(graphData)
     {
         // create a network
         var container = document.getElementById('graph');
-        $("#graph").css({'left':'0','right':'0' , 'bottom':'0', 'top':'0'});
+        $("#graph").css({'left':'2px','right':'2px' , 'bottom':'2px', 'top':'80px'});
         var options = {
-            dataManipulation: true
-            //stabilize : true,
-            //stabilizationIterations  : 2000,
+            smoothCurves : false,
+            //dataManipulation: true
+            //configurePhysics:true,
+            stabilize : false,
+            stabilizationIterations  : 2000,
             //hierarchicalLayout: true
-            //clustering: true,
+            //  clustering: true,
             //initialMaxNodes  : 10
             /*physics: {
                 barnesHut: {
@@ -48,5 +50,5 @@ var loadData = function()
                         showData(graphData);
                     });
     };
-//loadData()    
+loadData()    
 window.setInterval(loadData, 2000);

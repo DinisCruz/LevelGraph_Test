@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register ./tests/**.coffee -R list",
-    "watch": "mocha -w --compilers coffee:coffee-script/register --watch-extensions jade ./tests/*.coffee ./tests/**/*.coffee -R list",
+    "watch": "mocha -w --compilers coffee:coffee-script/register --watch-extensions jade ./*.coffee  --recursive -R list",
     "start": "node index.js",
     "publish": "git push heroku master:master && open http://levelgraph-test.herokuapp.com/",
     "dev": "./node_modules/supervisor/lib/cli-wrapper.js -e 'coffee,js' index.js"
@@ -24,7 +24,8 @@
     "level": "^0.18.0",
     "leveldown": "^1.0.0",
     "levelgraph": "^0.8.2",
-    "mocha": "^1.21.4"
+    "mocha": "^1.21.4",
+    "vis": "^3.5.0"
   },
   "devDependencies": {
     "cheerio": "^0.17.0",
