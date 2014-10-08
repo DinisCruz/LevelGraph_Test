@@ -45,9 +45,21 @@ addData = (db, callback)->
     
                                                  
     # Query    
-    addMappings data, "query-10002762fc3e"  ,  { is: "Query",   title: "Perform Validation on the Server", xref: []}
-    addMappings data, "query-20002762fc3e"  ,  { is: "Query",   title: "Validate All Input"              , xref: []}
-    addMappings data, "query-30002762fc3e"  ,  { is: "Query",   title: "Use White-list Validation"       , xref: []}
+    addMappings data, "query-10002762fc3e"  ,  { is: "Query",   title: "Perform Validation on the Server", xref: ['xref-31002762fc3e'
+                                                                                                                  'xref-32002762fc3e'
+                                                                                                                  'xref-33002762fc3e'
+                                                                                                                  'xref-34002762fc3e'
+                                                                                                                  'xref-35002762fc3e'
+                                                                                                                  'xref-36002762fc3e'
+                                                                                                                  'xref-37002762fc3e']}
+    addMappings data, "query-20002762fc3e"  ,  { is: "Query",   title: "Validate All Input"              , xref: ['xref-38002762fc3e'
+                                                                                                                  'xref-39002762fc3e'
+                                                                                                                  'xref-41002762fc3e']}
+
+    addMappings data, "query-30002762fc3e"  ,  { is: "Query",   title: "Use White-list Validation"       , xref: ['xref-42002762fc3e'
+                                                                                                                  'xref-43002762fc3e'
+                                                                                                                  'xref-44002762fc3e'
+                                                                                                                  'xref-45002762fc3e']}
     
     
     
@@ -158,10 +170,23 @@ addData = (db, callback)->
     addMappings data, "xref-27002762fc3e"   ,  { is: 'XRef',    target: 'article-46d6939abe45' , weight: '3' }
     addMappings data, "xref-28002762fc3e"   ,  { is: 'XRef',    target: 'article-46d6939abe45' , weight: '1' }
     addMappings data, "xref-29002762fc3e"   ,  { is: 'XRef',    target: 'article-46d6939abe45' , weight: '3' }
-#    addMappings data, "xref-30002762fc3e"   ,  { is: 'XRef',    target: 'article-' , weight: '3' }
-
-    #addMapping(data, "12wewe3", "is an", "aaaaa12356")
-    #console.log(data)
+    
+    addMappings data, "xref-31002762fc3e"   ,  { is: 'XRef',    target: 'article-e7ed2762fc3e' , weight: '1' }
+    addMappings data, "xref-32002762fc3e"   ,  { is: 'XRef',    target: 'article-d5bc580df781' , weight: '1' }
+    addMappings data, "xref-33002762fc3e"   ,  { is: 'XRef',    target: 'article-9771b8ed3eda' , weight: '3' }
+    addMappings data, "xref-34002762fc3e"   ,  { is: 'XRef',    target: 'article-1106d793193b' , weight: '3' }
+    addMappings data, "xref-35002762fc3e"   ,  { is: 'XRef',    target: 'article-3e15eef3a23c' , weight: '6' }
+    addMappings data, "xref-36002762fc3e"   ,  { is: 'XRef',    target: 'article-9f8b44a5b27d' , weight: '6' }
+    addMappings data, "xref-37002762fc3e"   ,  { is: 'XRef',    target: 'article-46d6939abe45' , weight: '9' }
+    
+    addMappings data, "xref-38002762fc3e"   ,  { is: 'XRef',    target: 'article-e7ed2762fc3e' , weight: '1' }
+    addMappings data, "xref-39002762fc3e"   ,  { is: 'XRef',    target: 'article-d5bc580df781' , weight: '1' }
+    addMappings data, "xref-41002762fc3e"   ,  { is: 'XRef',    target: 'article-9771b8ed3eda' , weight: '3' }
+    addMappings data, "xref-42002762fc3e"   ,  { is: 'XRef',    target: 'article-1106d793193b' , weight: '3' }
+    addMappings data, "xref-43002762fc3e"   ,  { is: 'XRef',    target: 'article-3e15eef3a23c' , weight: '6' }
+    addMappings data, "xref-44002762fc3e"   ,  { is: 'XRef',    target: 'article-9f8b44a5b27d' , weight: '6' }
+    addMappings data, "xref-45002762fc3e"   ,  { is: 'XRef',    target: 'article-46d6939abe45' , weight: '9' }
+    
     db.put data , callback    
 
 module.exports = addData
