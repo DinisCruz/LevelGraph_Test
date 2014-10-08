@@ -1,4 +1,4 @@
-var url = 'http://localhost:1331/graphData.json'
+var url = '/graphData.json'
 ///url = 'http://localhost:1331/rawGraphData.json'
 //url = 'http://localhost:1331/graphData/predicate/is an'
 //url = 'http://localhost:1331/graphData/subject/3e15eef3a23c'
@@ -11,7 +11,7 @@ var showData = function(graphData)
             smoothCurves : false,
             //dataManipulation: true
             //configurePhysics:true,
-            stabilize : false,
+            stabilize : true,
             stabilizationIterations  : 2000,
             //hierarchicalLayout: true
             //  clustering: true,
